@@ -1,10 +1,12 @@
 import React from 'react';
+import Providers from './contexts/providers';
+import AppRoutes from './routes';
 
 function App() {
   return (
-    <div className="App">
-      <h1>Medicar</h1>
-    </div>
+    <Providers>
+      <AppRoutes />
+    </Providers>
   );
 }
 
