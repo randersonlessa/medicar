@@ -30,7 +30,20 @@
   },
   "rules": {
     "no-use-before-define": "off",
+    "no-shadow": "off",
+    "no-nested-ternary": "off",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "import/prefer-default-export": "off",
+    "react/require-default-props": "off",
+    "react/prop-types": "off",
+    "react/jsx-props-no-spreading": "off",
+    "@typescript-eslint/no-empty-function": ["off"],
+    "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-use-before-define": [
+      "error"
+    ],
+    "@typescript-eslint/no-shadow": [
       "error"
     ],
     "react/jsx-filename-extension": [
@@ -49,19 +62,18 @@
         "tsx": "never"
       }
     ],
-    "no-shadow": "off",
-    "@typescript-eslint/no-shadow": [
-      "error"
-    ],
     "max-len": [
       "warn",
       {
-        "code": 80
+        "code": 100
       }
     ],
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
-    "import/prefer-default-export": "off",
-    "react/prop-types": "off"
+    "react/function-component-definition": [
+      "error",
+      {
+        "namedComponents": ["function-declaration", "arrow-function"],
+        "unnamedComponents": "arrow-function"
+      }
+    ]
   }
 }
