@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-import { useUserContext } from '../../contexts/user';
+import { addUser } from '../../stores/slices/user';
+
+import { login } from '../../services/api/users';
 
 import { Button } from '../../components/Button';
 import { CheckBox } from '../../components/CheckBox';
@@ -28,7 +32,8 @@ const schema = yup.object({
 });
 
 function Login() {
-  const { login } = useUserContext();
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
     control,
@@ -45,15 +50,33 @@ function Login() {
     },
   });
 
-  const handleLogin: SubmitHandler<LoginData> = async ({ email, password, keepSession }) => {
-    try {
-      await login(email, password, keepSession);
-    } catch (error: any) {
-      if (error?.status === 400) {
-        const apiErrors = error.data?.errors;
-        setError(apiErrors[0].field, { message: apiErrors[0].message });
-      }
-    }
+  const handleLogin: SubmitHandler<LoginData> = ({ email, password, keepSession }) => {
+    toast.promise(
+      async () => {
+        try {
+          setLoading(true);
+
+          const { user, token } = await login(email, password);
+          dispatch(addUser({ user, token, keepSession }));
+          setLoading(false);
+        } catch (error: any) {
+          setLoading(false);
+          if (error?.status === 400) {
+            const apiErrors = error.data?.errors;
+            setError(apiErrors[0].field, { message: apiErrors[0].message });
+          }
+          throw error;
+        }
+      },
+      {
+        pending: 'Entrando',
+        error: 'Parâmetros incorretos',
+      },
+      {
+        toastId: 'login',
+        position: toast.POSITION.BOTTOM_CENTER,
+      },
+    );
   };
 
   return (
@@ -65,6 +88,7 @@ function Login() {
           placeholder="Email ou Login"
           invalid={!!errors.email}
           errorText={errors.email?.message}
+          onKeyEnter={handleSubmit(handleLogin)}
           {...register('email')}
         />
         <Spacing height={20} />
@@ -73,6 +97,7 @@ function Login() {
           type="password"
           invalid={!!errors.password}
           errorText={errors.password?.message}
+          onKeyEnter={handleSubmit(handleLogin)}
           {...register('password')}
         />
         <Spacing height={8} />
@@ -91,7 +116,7 @@ function Login() {
         <Spacing height={39} />
         <ButtonArea>
           <Button variant="text" onClick={() => navigate('/register')}>Criar Conta</Button>
-          <Button onClick={handleSubmit(handleLogin)}>Acessar</Button>
+          <Button onClick={handleSubmit(handleLogin)} disabled={loading}>Acessar</Button>
         </ButtonArea>
       </Form>
     </Container>

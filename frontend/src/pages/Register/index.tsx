@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-import { useUserContext } from '../../contexts/user';
+import { addUser } from '../../stores/slices/user';
+
+import { register as registerUser } from '../../services/api/users';
 
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
@@ -33,7 +37,8 @@ const schema = yup.object({
 });
 
 function Register() {
-  const { register: registerUser } = useUserContext();
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
     register,
@@ -50,15 +55,33 @@ function Register() {
     },
   });
 
-  const handleRegister: SubmitHandler<RegisterData> = async ({ name, email, password }) => {
-    try {
-      await registerUser(name, email, password);
-    } catch (error: any) {
-      if (error?.status === 400) {
-        const apiErrors = error.data?.errors;
-        setError(apiErrors[0].field, { message: apiErrors[0].message });
-      }
-    }
+  const handleRegister: SubmitHandler<RegisterData> = ({ name, email, password }) => {
+    toast.promise(
+      async () => {
+        try {
+          setLoading(true);
+
+          const { user, token } = await registerUser(name, email, password);
+          dispatch(addUser({ user, token, keepSession: false }));
+          setLoading(false);
+        } catch (error: any) {
+          setLoading(false);
+          if (error?.status === 400) {
+            const apiErrors = error.data?.errors;
+            setError(apiErrors[0].field, { message: apiErrors[0].message });
+          }
+          throw error;
+        }
+      },
+      {
+        pending: 'Criando conta',
+        error: 'Parâmetros incorretos',
+      },
+      {
+        toastId: 'register',
+        position: toast.POSITION.BOTTOM_CENTER,
+      },
+    );
   };
 
   return (
@@ -72,6 +95,7 @@ function Register() {
           placeholder="Nome"
           invalid={!!errors.name}
           errorText={errors.name?.message}
+          onKeyEnter={handleSubmit(handleRegister)}
           {...register('name')}
         />
         <Spacing height={20} />
@@ -79,6 +103,7 @@ function Register() {
           placeholder="Email"
           invalid={!!errors.email}
           errorText={errors.email?.message}
+          onKeyEnter={handleSubmit(handleRegister)}
           {...register('email')}
         />
         <Spacing height={20} />
@@ -87,6 +112,7 @@ function Register() {
           type="password"
           invalid={!!errors.password}
           errorText={errors.password?.message}
+          onKeyEnter={handleSubmit(handleRegister)}
           {...register('password')}
         />
         <Spacing height={20} />
@@ -95,12 +121,13 @@ function Register() {
           type="password"
           invalid={!!errors.confirmPassword}
           errorText={errors.confirmPassword?.message}
+          onKeyEnter={handleSubmit(handleRegister)}
           {...register('confirmPassword')}
         />
         <Spacing height={40} />
         <ButtonArea>
           <Button variant="text" onClick={() => navigate(-1)}>Cancelar</Button>
-          <Button onClick={handleSubmit(handleRegister)}>Confirmar</Button>
+          <Button onClick={handleSubmit(handleRegister)} disabled={loading}>Confirmar</Button>
         </ButtonArea>
       </Form>
     </Container>
