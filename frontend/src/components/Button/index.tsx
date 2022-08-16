@@ -8,7 +8,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 export function Button({ variant = 'solid', children, ...props }: ButtonProps) {
   return (
-    <Container variant={variant} {...props}>
+    <Container variant={variant} {...props} data-testid="button-test">
       {children}
     </Container>
   );

@@ -9,6 +9,6 @@ interface ContainerProps {
 
 export function Container({ children, size = 'sm', ...props }: ContainerProps) {
   return (
-    <ContainerBase size={size} {...props}>{children}</ContainerBase>
+    <ContainerBase size={size} {...props} data-testid="container-test">{children}</ContainerBase>
   );
 }

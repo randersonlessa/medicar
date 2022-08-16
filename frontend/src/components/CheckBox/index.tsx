@@ -9,7 +9,7 @@ interface CheckBoxProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const CheckBox = forwardRef<HTMLInputElement, CheckBoxProps>(({ label, ...props }, ref) => (
-  <Container>
+  <Container data-testid="checkBox-test">
     <Input ref={ref} {...props} type="checkbox" />
     <Check />
     {label}

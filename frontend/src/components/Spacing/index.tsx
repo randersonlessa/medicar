@@ -8,6 +8,6 @@ interface SpacingProps {
 
 export function Spacing({ height, ...props }: SpacingProps) {
   return (
-    <Container height={height} {...props} />
+    <Container height={height} {...props} data-testid="spacing-test" />
   );
 }

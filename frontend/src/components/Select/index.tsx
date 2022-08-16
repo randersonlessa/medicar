@@ -26,6 +26,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(({
       value={value === undefined ? '' : value}
       disabled={disabled}
       isSelected={value !== undefined}
+      data-testid="select-test"
     >
       {value === undefined
       && (

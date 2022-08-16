@@ -4,7 +4,7 @@ interface IAppointment {
   doctor: string;
   day: string;
   time: string;
-  userId: number;
+  userId: string;
 }
 
 export default IAppointment;

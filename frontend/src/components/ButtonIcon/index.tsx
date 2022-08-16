@@ -27,7 +27,7 @@ export function ButtonIcon({
   iconName, variant = 'solid', disabled = false, children, ...props
 }: ButtonIconProps) {
   return (
-    <Container variant={variant} disabled={disabled} {...props}>
+    <Container variant={variant} disabled={disabled} {...props} data-testid="buttonIcon-test">
       {getIcon(iconName, disabled, variant)}
       <Label>{children}</Label>
     </Container>

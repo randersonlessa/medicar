@@ -17,7 +17,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <Container>
+    <Container data-testid="input-container-test">
       <InputBase
         ref={ref}
         {...props}
@@ -30,6 +30,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
             if (e.key === 'Enter' || e.keyCode === 13) { onKeyEnter(); }
           }
         }
+        data-testid="input-test"
       />
       <Label $invalid={invalid} type={type}>{placeholder}</Label>
       {(type === 'password' || showPassword)

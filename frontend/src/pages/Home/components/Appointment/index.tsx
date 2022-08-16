@@ -54,12 +54,13 @@ function AppointmentElement({
   return (
     <tr
       className={className}
+      data-testid="appointment-test"
       {...props}
     >
-      <td>{appointment.specialty}</td>
-      <td>{appointment.doctor}</td>
-      <td>{appointment.day}</td>
-      <td>{appointment.time}</td>
+      <td data-testid="appointment-specialty">{appointment.specialty}</td>
+      <td data-testid="appointment-doctor">{appointment.doctor}</td>
+      <td data-testid="appointment-day">{appointment.day}</td>
+      <td data-testid="appointment-time">{appointment.time}</td>
       <td>
         <ButtonIcon
           iconName="Remove"
