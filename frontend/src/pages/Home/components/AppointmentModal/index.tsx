@@ -189,8 +189,8 @@ export function AppointmentModal({
       toast.promise(
         loadSchedules,
         {
-          pending: `Carregando datas do ${doctorName}`,
-          success: `Datas do ${doctorName} carregados`,
+          pending: `Carregando datas de ${doctorName}`,
+          success: `Datas de ${doctorName} carregadas`,
           error: 'Um erro desconhecido aconteceu',
         },
         {
