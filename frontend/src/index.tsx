@@ -1,22 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+import { Provider } from 'react-redux';
+import { store } from './stores';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { CreateServer } from './mock/Server';
+import { CreateServer } from './mocks/Server';
 
 CreateServer();
+
+window.addEventListener(
+  'beforeunload',
+  (event) => {
+    const confirmationMessage = 'Ao recarregar a página seus dados serão perdidos';
+    event.returnValue = confirmationMessage;
+    return confirmationMessage;
+  },
+);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
 root.render(
-  <React.StrictMode>
+  <Provider store={store}>
     <App />
-  </React.StrictMode>,
+  </Provider>,
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

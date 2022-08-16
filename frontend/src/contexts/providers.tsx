@@ -1,6 +1,8 @@
 import React from 'react';
+import { ToastContainer } from 'react-toastify';
+
 import { ThemeProvider } from './theme';
-import { UserProvider } from './user';
+// import { UserProvider } from './user';
 
 interface ProvidersProps {
   children?: React.ReactNode;
@@ -9,9 +11,13 @@ interface ProvidersProps {
 function Providers({ children }: ProvidersProps) {
   return (
     <ThemeProvider>
-      <UserProvider>
-        {children}
-      </UserProvider>
+      {
+        /* Possibilidade de usar o context User ao invés do redux */
+      }
+      {/* <UserProvider> */}
+      {children}
+      <ToastContainer />
+      {/* </UserProvider> */}
     </ThemeProvider>
   );
 }

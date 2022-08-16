@@ -4,8 +4,8 @@ import {
   DefaultTheme,
 } from 'styled-components';
 
-import { Default } from './themes/defaultTheme';
-import { GlobalStyle } from './styles/globalStyle';
+import { Default } from '../themes/defaultTheme';
+import { GlobalStyle } from '../styles/globalStyle';
 
 interface ThemeContextProps {
   theme?: DefaultTheme | undefined;

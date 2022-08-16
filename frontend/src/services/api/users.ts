@@ -1,4 +1,5 @@
 import api from '.';
+
 import IUser from '../../interfaces/User';
 
 export async function register(name: string, email: string, password: string) {
@@ -25,10 +26,10 @@ export async function login(email: string, password: string) {
   }
 }
 
-export async function getUser() {
+export async function getUser(userId: string) {
   try {
-    const response = await api.post<IUser>(
-      '/users',
+    const response = await api.get<IUser>(
+      `/users/${userId}`,
       {},
     );
     return response.data;

@@ -11,9 +11,8 @@ import * as UserService from '../services/api/users';
 interface UserContextProps {
   userContextLoading: boolean;
   user: IUser | null;
-  register: (name: string, email: string, password: string) => void;
-  login: (name: string, password: string, keep: boolean) => void;
-  logout: () => void;
+  addUser: (data: {user: IUser, token: string, keepSession: boolean}) => void;
+  removeUser: () => void;
 }
 
 interface UserProviderProps {
@@ -24,41 +23,25 @@ const UserContext = createContext<UserContextProps>({
   userContextLoading: true,
   user: null,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  register: (name: string, email: string, password: string) => {},
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  login: (name: string, password: string, keep: boolean) => {},
-  logout: () => {},
+  addUser: (data: {user: IUser, token: string, keepSession: boolean}) => {},
+  removeUser: () => {},
 });
 
 export function UserProvider({ children }: UserProviderProps) {
   const [userContextLoading, setUserContextLoading] = useState(true);
   const [user, setUser] = useState<IUser | null>(null);
 
-  const register = useCallback(async (name: string, email: string, password: string) => {
-    const result = await UserService.register(name, email, password);
+  const addUser = useCallback((data: {user: IUser, token: string, keepSession: boolean}) => {
+    const storage = data.keepSession ? localStorage : sessionStorage;
 
-    const storage = sessionStorage;
+    new ConfigRepository().setKeepSession(data.keepSession);
+    new AuthRepository(storage).setToken(data.token);
 
-    new ConfigRepository().setKeepSession(false);
-    new AuthRepository(storage).setToken(result.token);
-
-    new UserRepository(storage).setUser(result.user);
-    setUser(result.user);
+    new UserRepository(storage).setUser(data.user);
+    setUser(data.user);
   }, []);
 
-  const login = useCallback(async (email: string, password: string, keepSession: boolean) => {
-    const result = await UserService.login(email, password);
-
-    const storage = keepSession ? localStorage : sessionStorage;
-
-    new ConfigRepository().setKeepSession(keepSession);
-    new AuthRepository(storage).setToken(result.token);
-
-    new UserRepository(storage).setUser(result.user);
-    setUser(result.user);
-  }, []);
-
-  const logout = useCallback(() => {
+  const removeUser = useCallback(() => {
     const keepSession = new ConfigRepository().getKeepSession();
     const storage = keepSession ? localStorage : sessionStorage;
     new UserRepository(storage).removeUser();
@@ -67,21 +50,31 @@ export function UserProvider({ children }: UserProviderProps) {
   }, []);
 
   useEffect(() => {
-    const keepSession = new ConfigRepository().getKeepSession();
-    const storage = keepSession ? localStorage : sessionStorage;
-    const currentUser = new UserRepository(storage).getUser();
-    setUser(currentUser);
-    setUserContextLoading(false);
+    const loadUser = async () => {
+      const keepSession = new ConfigRepository().getKeepSession();
+      const storage = keepSession ? localStorage : sessionStorage;
+      const currentUser = new UserRepository(storage).getUser();
+
+      if (currentUser) {
+        try {
+          const apiUser = await UserService.getUser(currentUser.id);
+          setUser(apiUser);
+        // eslint-disable-next-line no-empty
+        } catch {}
+      }
+      setUserContextLoading(false);
+    };
+
+    loadUser();
   }, []);
 
   return (
     <UserContext.Provider value={useMemo(() => ({
       userContextLoading,
       user,
-      register,
-      login,
-      logout,
-    }), [userContextLoading, user, register, login, logout])}
+      addUser,
+      removeUser,
+    }), [userContextLoading, user, addUser, removeUser])}
     >
       {children}
     </UserContext.Provider>
